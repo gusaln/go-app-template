@@ -1,41 +1,37 @@
 package main
 
 import (
-	"context"
-	"log"
+	"fmt"
+	"os"
 
 	"example.com/application/config"
-	"example.com/application/pkg/datastore"
-	"github.com/pressly/goose"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-var MigrateCreateCmd = &cobra.Command{
-	Use:       "create",
-	Short:     "Migration tool",
-	ValidArgs: []string{"name"},
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			log.Fatalln("Must provide the 'name' of the migration as first argument")
-		}
-		name := args[0]
+var rootCmd = &cobra.Command{
+	Use:   "migrate",
+	Short: "Migration tool",
+}
 
-		cfg := config.GetConfig()
-		db, err := datastore.CreateConnection(context.Background(), cfg.DbUri)
-		if err != nil {
-			log.Fatalln("Error setting up connection", err)
-		}
-		defer db.Close()
-
-		if err := goose.Create(db, "schemas/migrations", name, "sql"); err != nil {
-			log.Fatalln("Error creating migrations", err)
+func init() {
+	rootCmd.PersistentFlags().StringP("config", "c", "", "config file (default is $XDG_CONFIG_HOME/keepingtabs.toml)")
+	cobra.OnInitialize(func() {
+		cfgFile := rootCmd.Flags().Lookup("config")
+		if cfgFile.Value.String() != "" {
+			viper.SetConfigFile(cfgFile.Value.String())
 		}
 
-	},
+		config.ReadConfigFile()
+	})
+	rootCmd.AddCommand(migrateCreateCmd)
+	rootCmd.AddCommand(migrateUpCmd)
+	rootCmd.AddCommand(migrateDownCmd)
 }
 
 func main() {
-	config.ReadConfig()
-
-	MigrateCreateCmd.Execute()
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
