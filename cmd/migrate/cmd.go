@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"example.com/application/config"
-	"example.com/application/pkg/datastore"
+	"example.com/application/internal/datastore"
 	migrate "example.com/application/schemas"
 	"github.com/pressly/goose/v3"
 	"github.com/spf13/cobra"

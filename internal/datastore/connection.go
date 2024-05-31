@@ -17,7 +17,7 @@ import (
 	// _ "github.com/gwenn/gosqlite"
 )
 
-var db *sql.DB
+var dbConn *sql.DB
 
 func CreateConnection(ctx context.Context, uri string) (*sql.DB, error) {
 	// _db, err := pgx.Connect(ctx, uri)
@@ -26,13 +26,15 @@ func CreateConnection(ctx context.Context, uri string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	return _db, nil
+	dbConn = _db
+
+	return dbConn, nil
 }
 
 func GetConnection() (*sql.DB, error) {
-	if db == nil {
+	if dbConn == nil {
 		return nil, errors.New("there is no active connection")
 	}
 
-	return db, nil
+	return dbConn, nil
 }

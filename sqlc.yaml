@@ -7,7 +7,7 @@ sql:
       uri: ${DB_URI}
     gen:
       go:
-        package: "data"
-        out: "database/data"
+        package: "datastore"
+        out: "internal/datastore"
         sql_package: "database/sql"
         # sql_package: "pgx/v5"
