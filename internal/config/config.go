@@ -24,13 +24,19 @@ type Config struct {
 	DbUri string
 }
 
-// ReadConfigFile Reads the config file from one of the sources
+func ReadFile(path string) error {
+	viper.SetConfigFile(path)
+
+	return viper.ReadInConfig()
+}
+
+// FindAndReadFile Reads the config file from one of the sources
 //
 // Tries to read the config from:
 // 1. $XDG_CONFIG_HOME/application/application.toml
 // 2. $HOME/.application
 // 3. <curren path>/application.toml
-func ReadConfigFile() error {
+func FindAndReadFile() error {
 	ok, err := readFromXdg()
 	if ok {
 		return nil

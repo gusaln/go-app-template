@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"log"
+	"strings"
 
-	"example.com/application/config"
+	"example.com/application/internal/config"
 	"example.com/application/internal/datastore"
-	migrate "example.com/application/schemas"
+	schemas "example.com/application/schemas"
 	"github.com/pressly/goose/v3"
 	"github.com/spf13/cobra"
 )
@@ -16,7 +17,11 @@ var migrateCreateCmd = &cobra.Command{
 	Short: "Create a migration",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		name := args[0]
+		name := strings.TrimSpace(args[0])
+
+		if name == "" {
+			log.Fatalln("Migration name can't be empty")
+		}
 
 		cfg := config.Get()
 		db, err := datastore.CreateConnection(context.Background(), cfg.DbUri)
@@ -51,7 +56,7 @@ var migrateUpCmd = &cobra.Command{
 			log.Fatalln("Error setting dialect:", err)
 		}
 
-		goose.SetBaseFS(migrate.EmbedMigrations)
+		goose.SetBaseFS(schemas.EmbedMigrations)
 		if err := goose.Up(db, "migrations"); err != nil {
 			log.Fatalln("Error migrating:", err)
 		}
@@ -75,7 +80,7 @@ var migrateDownCmd = &cobra.Command{
 			log.Fatalln("Error setting dialect:", err)
 		}
 
-		goose.SetBaseFS(migrate.EmbedMigrations)
+		goose.SetBaseFS(schemas.EmbedMigrations)
 		if err := goose.Down(db, "migrations"); err != nil {
 			log.Fatalln("Error migrating:", err)
 		}

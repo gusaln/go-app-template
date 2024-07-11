@@ -1,4 +1,4 @@
 all: bin/migrate
 
-bin/migrate: schemas/main.go schemas/migrations/*.sql
-	go build -o bin/migrate schemas/main.go
+bin/migrate: cmd/migrate/* schemas/migrations/*.sql
+	go build -o bin/migrate cmd/migrate/*

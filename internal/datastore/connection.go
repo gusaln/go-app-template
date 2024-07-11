@@ -21,7 +21,7 @@ var dbConn *sql.DB
 
 func CreateConnection(ctx context.Context, uri string) (*sql.DB, error) {
 	// _db, err := pgx.Connect(ctx, uri)
-	_db, err := sql.Open("sqlite3", uri)
+	_db, err := sql.Open("sqlite", uri)
 	if err != nil {
 		return nil, err
 	}
